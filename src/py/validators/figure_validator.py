@@ -64,11 +64,22 @@ class FigureValidator(BaseValidator):
 
         # Check if FIGURES directory exists
         if not os.path.exists(self.figures_dir):
+            error_msg = f"FIGURES directory not found: {self.figures_dir}"
+            suggestion = (
+                "Create FIGURES/ directory in manuscript folder. "
+                "You can:\n"
+                "  • Run 'mkdir -p FIGURES' in your manuscript directory\n"
+                "  • Add figure generation scripts (.py) or Mermaid diagrams (.mmd)\n"
+                "  • Place existing figures in subdirectories "
+                "(e.g., Figure_1/Figure_1.svg)\n"
+                "  • The build system will create this directory automatically "
+                "if missing"
+            )
             errors.append(
                 self._create_error(
                     ValidationLevel.ERROR,
-                    "FIGURES directory not found",
-                    suggestion="Create FIGURES/ directory in manuscript folder",
+                    error_msg,
+                    suggestion=suggestion,
                 )
             )
             return ValidationResult(
