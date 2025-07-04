@@ -1,0 +1,49 @@
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#2E86AB',
+    'primaryTextColor': '#FFFFFF',
+    'primaryBorderColor': '#A23B72',
+    'lineColor': '#F18F01',
+    'secondaryColor': '#C73E1D',
+    'tertiaryColor': '#F3A712',
+    'background': '#FFFFFF',
+    'mainBkg': '#E8F4FD',
+    'secondBkg': '#FFF2CC',
+    'tertiaryBkg': '#FCE4EC'
+  }
+}}%%
+
+flowchart TD
+    Start([User Initializes EZInput]) --> Detect{Environment Detection}
+    Detect --> EnvOptions["• IPython Kernel<br/>• Terminal/CLI"]
+    EnvOptions --> LoadConfig[Load Configuration<br/>~/.ezinput/title.yml]
+    LoadConfig --> CheckParams{Parameters File?}
+    CheckParams -->|No| CreateWidgets[Create Widgets<br/>IPyWidgets or Prompt Dialogs]
+    CheckParams -->|Yes| LoadParams[Load YAML Parameters]
+    LoadParams --> CreateWidgets
+    CreateWidgets --> WidgetTypes[Unified Widget API]
+    WidgetTypes --> WidgetGroup["Text Input | Numeric Input | Range Sliders | Checkboxes | Dropdowns | Labels | Buttons/Callbacks | File Handling"]
+    WidgetGroup --> DataFlow[Data Collection]
+    
+    %% Force zigzag layout with invisible positioning
+    Start ~~~ Detect
+    LoadConfig ~~~ EnvOptions
+    CheckParams ~~~ LoadParams
+    WidgetTypes ~~~ CreateWidgets
+    WidgetGroup ~~~ DataFlow
+    
+    %% Styling
+    classDef startEnd fill:#2E86AB,stroke:#A23B72,stroke-width:3px,color:#FFFFFF
+    classDef environment fill:#F3A712,stroke:#C73E1D,stroke-width:2px,color:#000000
+    classDef classType fill:#C73E1D,stroke:#A23B72,stroke-width:2px,color:#FFFFFF
+    classDef widget fill:#E8F4FD,stroke:#2E86AB,stroke-width:2px,color:#000000
+    classDef data fill:#FFF2CC,stroke:#F18F01,stroke-width:2px,color:#000000
+    classDef decision fill:#FCE4EC,stroke:#A23B72,stroke-width:2px,color:#000000
+    
+    class Start,DataFlow startEnd
+    class Detect,CheckParams decision
+    class EnvOptions environment
+    class WidgetTypes classType
+    class LoadConfig,LoadParams data
+    class CreateWidgets,WidgetGroup widget
