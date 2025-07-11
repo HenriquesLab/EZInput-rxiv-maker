@@ -313,6 +313,63 @@ add-bibliography:
 10.%: ;
 	@# DOI patterns are handled by add-bibliography target
 
+# Internal target for generating figures only
+.PHONY: _generate_figures
+_generate_figures:
+	@echo "Checking manuscript directory structure..."
+	@if [ ! -d "$(FIGURES_DIR)" ]; then \
+		echo "⚠️  WARNING: FIGURES directory not found: $(FIGURES_DIR)"; \
+		echo "   Creating FIGURES directory..."; \
+		mkdir -p $(FIGURES_DIR); \
+		echo "   ✅ Created $(FIGURES_DIR)"; \
+		echo "   💡 Add figure generation scripts (.py) or Mermaid diagrams (.mmd) to this directory"; \
+		echo "   💡 Or manually place figure files in subdirectories (e.g., Figure_1/Figure_1.svg)"; \
+	fi
+
+	@echo "Checking if figures need to be generated..."
+	@NEED_FIGURES=false; \
+	if [ -d "$(FIGURES_DIR)" ]; then \
+		for mmd_file in $(FIGURES_DIR)/*.mmd; do \
+			if [ -f "$$mmd_file" ]; then \
+				base_name=$$(basename "$$mmd_file" .mmd); \
+				if [ ! -f "$(FIGURES_DIR)/$$base_name/$$base_name.pdf" ]; then \
+					NEED_FIGURES=true; \
+					break; \
+				fi; \
+			fi; \
+		done; \
+	fi; \
+	if [ "$$NEED_FIGURES" = "true" ] || [ "$(FORCE_FIGURES)" = "true" ]; then \
+		echo "Generating figures from $(FIGURES_DIR)..."; \
+		MANUSCRIPT_PATH="$(MANUSCRIPT_PATH)" $(PYTHON_CMD) $(FIGURE_SCRIPT) --figures-dir $(FIGURES_DIR) --output-dir $(FIGURES_DIR) --format pdf; \
+	fi
+
+	@echo "Checking if Python figure scripts need to be executed..."
+	@NEED_PYTHON_FIGURES=false; \
+	if [ -d "$(FIGURES_DIR)" ]; then \
+		for py_file in $(FIGURES_DIR)/*.py; do \
+			if [ -f "$$py_file" ]; then \
+				base_name=$$(basename "$$py_file" .py); \
+				if [ ! -f "$(FIGURES_DIR)/$$base_name/$$base_name.png" ] || [ ! -f "$(FIGURES_DIR)/$$base_name/$$base_name.pdf" ]; then \
+					NEED_PYTHON_FIGURES=true; \
+					break; \
+				fi; \
+			fi; \
+		done; \
+	fi; \
+	if [ "$$NEED_PYTHON_FIGURES" = "true" ] || [ "$(FORCE_FIGURES)" = "true" ]; then \
+		echo "Executing Python figure generation scripts..."; \
+		CURRENT_DIR=$$(pwd); \
+		cd $(FIGURES_DIR) && \
+		for py_file in *.py; do \
+			if [ -f "$$py_file" ]; then \
+				echo "  Running $$py_file..."; \
+				$$CURRENT_DIR/$(PYTHON_CMD) "$$py_file" || { echo "Error running $$py_file"; exit 1; }; \
+			fi; \
+		done; \
+		cd $$CURRENT_DIR; \
+	fi
+
 # ======================================================================
 # 🔨 INTERNAL BUILD TARGETS (Deprecated - now handled by Python)
 # ======================================================================
