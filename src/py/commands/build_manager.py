@@ -78,6 +78,7 @@ class BuildManager:
         self.warnings_log = self.output_dir / "build_warnings.log"
         self.bibtex_log = self.output_dir / "bibtex_warnings.log"
 
+
     def log(self, message: str, level: str = "INFO"):
         """Log a message with appropriate formatting."""
         if level == "INFO":
@@ -131,6 +132,7 @@ class BuildManager:
                 self.log(f"BibTeX warnings logged to {self.bibtex_log.name}", "INFO")
         except Exception:
             pass  # Don't fail the build if logging fails
+
 
     def setup_output_directory(self) -> bool:
         """Create and set up the output directory."""
@@ -196,6 +198,7 @@ class BuildManager:
 
             if self.verbose:
                 cmd.append("--verbose")
+
 
             if "uv run" in self.platform.python_cmd:
                 cmd = ["uv", "run", "python"] + cmd[1:]
@@ -315,6 +318,7 @@ class BuildManager:
 
     def _check_missing_output_files(self) -> bool:
         """Check if any expected output files are missing."""
+        # Check for source files that need processing
         source_files = (
             list(self.figures_dir.glob("*.mmd"))
             + list(self.figures_dir.glob("*.py"))
@@ -354,6 +358,7 @@ class BuildManager:
                 output_file = output_dir / f"{base_name}.pdf"
             else:
                 output_file = output_dir / f"{base_name}.png"
+
 
             # Check if output file exists and is newer than source
             if not output_file.exists():
@@ -694,6 +699,7 @@ class BuildManager:
         except Exception as e:
             self.log(f"Error running PDF validation: {e}", "WARNING")
             return True  # Don't fail the build on PDF validation errors
+
 
     def run_full_build(self) -> bool:
         """Run the complete build process."""

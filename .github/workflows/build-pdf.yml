@@ -156,52 +156,9 @@ jobs:
         echo "  - Created /tmp/texmf-var"
         echo "  - Created output"
 
-        # Check manuscript directory exists
-        echo "📂 Checking manuscript directory..."
-        if [ -d "$MANUSCRIPT_PATH" ]; then
-          echo "  ✅ Manuscript directory exists: $MANUSCRIPT_PATH"
-          echo "  📋 Contents:"
-          ls -la "$MANUSCRIPT_PATH" | sed 's/^/    /'
-        else
-          echo "  ❌ ERROR: Manuscript directory not found: $MANUSCRIPT_PATH"
-          echo "  📋 Available directories:"
-          ls -la . | grep '^d' | sed 's/^/    /'
-          exit 1
-        fi
-
-        # Check Python dependencies
-        echo "🐍 Checking Python dependencies..."
-        python3 -c "import sys; print(f'  - Python executable: {sys.executable}')"
-        python3 -c "import numpy; print(f'  - NumPy version: {numpy.__version__}')" || echo "  ❌ NumPy not available"
-        python3 -c "import matplotlib; print(f'  - Matplotlib version: {matplotlib.__version__}')" || echo "  ❌ Matplotlib not available"
-        python3 -c "import yaml; print(f'  - PyYAML available')" || echo "  ❌ PyYAML not available"
-
-        # Run the build with step-by-step logging
-        echo "🧹 Step 1: Cleaning figures..."
-        make clean-figures 2>&1 | sed 's/^/  /'
-        echo "  ✅ Figures cleaned"
-
-        echo "📄 Step 2: Generating PDF..."
-        echo "  Command: make pdf"
-        echo "  Working directory: $(pwd)"
-        echo "  Start time: $(date)"
-
-        # Run make pdf with detailed output
-        set -o pipefail
-        make pdf 2>&1 | tee /tmp/make_pdf_output.log | sed 's/^/  /'
-        MAKE_EXIT_CODE=$?
-
-        echo "  End time: $(date)"
-        echo "  Exit code: $MAKE_EXIT_CODE"
-
-        if [ $MAKE_EXIT_CODE -ne 0 ]; then
-          echo "  ❌ make pdf failed with exit code $MAKE_EXIT_CODE"
-          echo "  📋 Last 50 lines of output:"
-          tail -50 /tmp/make_pdf_output.log | sed 's/^/    /'
-          exit $MAKE_EXIT_CODE
-        else
-          echo "  ✅ make pdf completed successfully"
-        fi
+        # Run the build
+        make clean-figures
+        make pdf
 
     - name: Check PDF generation
       run: |
