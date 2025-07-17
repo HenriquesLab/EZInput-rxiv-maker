@@ -26,6 +26,20 @@ authors:
     orcid: 0000-0002-9151-5477
     x: "@Bruno_MSaraiva"
     linkedin: "bruno-saraiva"
+  - name: "António D. Brito"
+    affiliations:
+      - "ITQB NOVA"
+    corresponding_author: false
+    co_first_author: false
+    email64: "YW50b25pby5icml0b0BpdHFiLnVubC5wdA=="
+    orcid: 0009-0001-1769-2627
+  - name: "Damián Martínez"
+    affiliations:
+      - "ITQB NOVA"
+    corresponding_author: false
+    co_first_author: false
+    email64: "ZGFtaWFuLm1hcnRpbmV6QGl0cWIudW5sLnB0"
+    orcid: 0000-0002-5906-598X
   - name: "Guillaume Jaquemet"
     affiliations:
       - "Åbo"
